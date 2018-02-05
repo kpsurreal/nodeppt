@@ -231,3 +231,77 @@ import "./file2";
 import "module";
 import "module/lib/file";
 ```
+
+[slide]
+## 构建目标(Targets)
+
+因为服务器和浏览器代码都可以用 JavaScript 编写，所以 webpack 提供了多种构建目标(target)，你可以在你的 webpack 配置中设置。
+
+### 用法
+
+要设置 target 属性，只需要在你的 webpack 配置中设置 target 的值。
+webpack.config.js
+```
+module.exports = {
+  target: 'node'
+};
+```
+
+ps:在上面例子中，使用 node webpack 会编译为用于「类 Node.js」环境（使用 Node.js 的 require ，而不是使用任意内置模块（如 fs 或 path）来加载 chunk）。
+
+[slide]
+
+## 多个 Target
+尽管 webpack 不支持向 target 传入多个字符串，你可以通过打包两份分离的配置来创建同构的库：
+webpack.config.js
+```
+var path = require('path');
+var serverConfig = {
+  target: 'node',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'lib.node.js'
+  }
+  //…
+};
+
+var clientConfig = {
+  target: 'web', // <=== 默认是 'web'，可省略
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'lib.js'
+  }
+  //…
+};
+
+module.exports = [ serverConfig, clientConfig ];
+```
+
+[slide]
+## 传入funciton
+例如，如果你不需要使用以上任何插件：
+```
+const options = {
+  target: () => undefined
+};
+```
+或者可以使用你想要指定的插件
+```
+const webpack = require("webpack");
+
+const options = {
+  target: (compiler) => {
+    compiler.apply(
+      new webpack.JsonpTemplatePlugin(options.output),
+      new webpack.LoaderTargetPlugin("web")
+    );
+  }
+};
+```
+
+
+
+## Manifest
+webpack manifest文件用来引导所有模块的交互。manifest文件包含了加载和处理模块的逻辑。
+
+当webpack编译器处理和映射应用代码时，它把模块的详细的信息都记录到了manifest文件中。当模块被打包并运输到浏览器上时，runtime就会根据manifest文件来处理和加载模块。利用manifest就知道从哪里去获取模块代码。
