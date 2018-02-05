@@ -31,7 +31,7 @@ Slide.on('update', function(i, si) {
     }
 
 })
-
+console.log('ddddd');
 
 
 var Easing = {
